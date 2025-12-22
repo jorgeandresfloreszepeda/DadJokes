@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chistes de Papá</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+        #login { margin-bottom: 20px; }
+        #joke { font-size: 1.2em; color: #333; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Chistes de Papá</h1>
+    <div id="login">
+        <label for="username">Usuario:</label>
+        <input type="text" id="username" placeholder="Ingresa tu usuario"><br><br>
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" placeholder="Ingresa tu contraseña"><br><br>
+        <button onclick="login()">Iniciar Sesión</button>
+        <p id="error" style="color: red;"></p>
+    </div>
+    <div id="joke" class="hidden"></div>
+    <script src="script.js"></script>
+</body>
+</html>
