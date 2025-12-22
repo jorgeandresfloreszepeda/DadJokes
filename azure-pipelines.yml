@@ -1,0 +1,28 @@
+trigger:
+- none  # Sigue siendo manual
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- checkout: self
+  submodules: true
+  persistCredentials: true
+
+# Paso 1: Descargar el token desde Key Vault
+- task: AzureKeyVault@2
+  displayName: 'Obtener Deployment Token desde Key Vault'
+  inputs:
+    azureSubscription: 'AzureCloudJaf'  # Nombre de tu service connection
+    KeyVaultName: 'kv-devsecops-2025'      # Exacto, sin .vault.azure.net
+    SecretsFilter: 'DeploymentToken'  # Nombre exacto del secreto
+    RunAsPreJob: false
+
+# Paso 2: Desplegar a Static Web Apps usando la variable generada
+- task: AzureStaticWebApp@0
+  displayName: 'Desplegar a Azure Static Web Apps'
+  inputs:
+    app_location: '/'          # Raíz del repo
+    api_location: ''           # Vacío (no hay API)
+    output_location: ''        # Vacío para sitios estáticos puros
+    azure_static_web_apps_api_token: $(staticwebapp-deployment-token)  # Variable creada automáticamente (nombre del secreto en minúsculas con guiones)
