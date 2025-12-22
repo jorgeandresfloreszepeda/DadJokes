@@ -13,7 +13,7 @@ steps:
 - task: AzureKeyVault@2
   displayName: 'Obtener Deployment Token desde Key Vault'
   inputs:
-    azureSubscription: 'AzureCloudJaf'  # Nombre de tu service connection
+    azureSubscription: 'azurerm-connection'  # Nombre de tu service connection
     KeyVaultName: 'kv-devsecops-2025'      # Exacto, sin .vault.azure.net
     SecretsFilter: 'DeploymentToken'  # Nombre exacto del secreto
     RunAsPreJob: false
@@ -25,4 +25,4 @@ steps:
     app_location: '/'          # Raíz del repo
     api_location: ''           # Vacío (no hay API)
     output_location: ''        # Vacío para sitios estáticos puros
-    azure_static_web_apps_api_token: $(staticwebapp-deployment-token)  # Variable creada automáticamente (nombre del secreto en minúsculas con guiones)
+    azure_static_web_apps_api_token: $(deploymenttoken)  # Variable creada automáticamente (nombre del secreto en minúsculas con guiones)
