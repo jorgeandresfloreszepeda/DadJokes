@@ -1,5 +1,5 @@
 trigger:
-- none  # Sigue siendo manual
+- none  # Sigue siendo manual, no a partir de branch
 
 pool:
   vmImage: ubuntu-latest
