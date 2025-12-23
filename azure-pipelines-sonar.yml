@@ -16,7 +16,7 @@ steps:
   inputs:
     SonarCloud: 'sonar_connector'  # Nombre exacto de tu service connection
     organization: 'jorgeandresfloreszepeda'     # Organization key de SonarCloud
-    scannerMode: 'dotnet'                   # CLI es ideal para proyectos JS/HTML sin build
+    scannerMode: 'CLI'                   # CLI es ideal para proyectos JS/HTML sin build
     ProjectKey: 'jorgeandresfloreszepeda_DadJokes'  # Project key exacto
     ProjectName: 'Chistes de Papá'    # Nombre amigable (opcional pero recomendado)
     cliSources: '.'                      # Raíz del repo (analiza todo)
