@@ -11,7 +11,7 @@ steps:
   fetchDepth: 0  # Importante para análisis de branches/PRs (descarga historial completo)
 
 # Paso 1: Preparar análisis SonarCloud (CLI para JS/HTML simple)
-- task: SonarCloudPrepare@2
+- task: SonarCloudPrepare@3
   displayName: 'Preparar Análisis SonarCloud'
   inputs:
     SonarCloud: 'sonar_connector'  # Nombre exacto de tu service connection
@@ -31,11 +31,11 @@ steps:
     RunAsPreJob: false
 
 # Paso 3: Ejecutar el análisis SonarCloud
-- task: SonarCloudAnalyze@2
+- task: SonarCloudAnalyze@3
   displayName: 'Ejecutar Análisis SonarCloud'
 
 # Paso 4: Publicar resultados y Quality Gate (opcional pero recomendado)
-- task: SonarCloudPublish@2
+- task: SonarCloudPublish@3
   displayName: 'Publicar Resultados SonarCloud'
   inputs:
     pollingTimeoutSec: '300'  # Tiempo máximo de espera (5 min)
