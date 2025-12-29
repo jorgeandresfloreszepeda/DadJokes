@@ -3,25 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chistes de Papá</title>
+    <title>Chistes de Papá - Insecure Edition</title>
+
+    <!-- Removed CSP entirely → triggers security hotspot -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'"> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
-        #login { margin-bottom: 20px; }
-        #joke { font-size: 1.2em; color: #333; }
+        body { font-family: Arial; text-align: center; margin: 50px; background: #222; color: #0f0; }
+        input, button { padding: 10px; margin: 5px; font-size: 1em; }
+        #joke { font-size: 1.5em; margin-top: 30px; padding: 20px; background: #000; border: 2px solid red; }
         .hidden { display: none; }
     </style>
+
+    <!-- Inline script with no nonce → CSP violation if policy existed -->
+    <script>
+        // Inline script without nonce (would violate strict CSP)
+        console.log("Inline script running - CSP bypass risk");
+    </script>
 </head>
 <body>
-    <h1>Chistes de Papá</h1>
+    <h1>Bienvenido al Sistema Ultra Seguro de Chistes</h1>
+
     <div id="login">
-        <label for="username">Usuario:</label>
-        <input type="text" id="username" placeholder="Ingresa tu usuario para recibir un chiste de Papa"><br><br>
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" placeholder="Ingresa tu contraseña"><br><br>
-        <button onclick="login()">Iniciar Sesión</button>
-        <p id="error" style="color: red;"></p>
+        <input type="text" id="username" placeholder="Usuario (prueba: admin)">
+        <br><br>
+        <input type="password" id="password" placeholder="Contraseña (prueba: 12345)">
+        <br><br>
+        <button onclick="login()">Acceder al Chiste Secreto</button>
+        <p id="error" style="color: red; font-weight: bold;"></p>
     </div>
+
     <div id="joke" class="hidden"></div>
+
+    <!-- Inline event handler + dynamic code risk -->
+    <button onclick="eval(document.getElementById('username').value)">Ejecutar código del usuario</button>
+
     <script src="script.js"></script>
 </body>
 </html>
