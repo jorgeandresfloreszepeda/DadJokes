@@ -43,6 +43,7 @@ steps:
   displayName: 'Publicar Resultados SonarCloud'
   inputs:
     pollingTimeoutSec: '300'  # Tiempo máximo de espera (5 min)
+    continueOnError: false    # Evita que falle el pipeline si el Quality Gate falla
 
 # Paso 5: Desplegar a Static Web Apps
 - task: AzureStaticWebApp@0
