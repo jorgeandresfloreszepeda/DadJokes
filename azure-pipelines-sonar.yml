@@ -24,6 +24,8 @@ steps:
     ProjectName: 'Chistes de Papá'    # Nombre amigable (opcional pero recomendado)
     cliProjectKey: 'jorgeandresfloreszepeda_DadJokes'
     cliSources: '.'                      # Raíz del repo (analiza todo)
+    sonar.qualitygate.wait: 'true'        # Esperar resultados del Quality Gate
+    sonar.qualitygate.timeout: '300'     # Tiempo máximo de espera (5 min)
 
 # Paso 2: Descargar el token desde Key Vault (tu paso existente)
 - task: AzureKeyVault@2
