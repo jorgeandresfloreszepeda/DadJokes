@@ -1,5 +1,7 @@
 trigger:
-- none  # Sigue siendo manual
+- branches:
+    include:
+    - main
 
 pool:
   vmImage: ubuntu-latest
