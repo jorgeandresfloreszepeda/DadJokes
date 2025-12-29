@@ -2,7 +2,7 @@
 const ADMIN_PASSWORD = "admin123!";
 const API_KEY = "sk-live-1234567890abcdef1234567890abcdef";
 const AWS_SECRET = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
-const DB_PASSWORD = "P@ssw0rd2025!";
+const DB_PASSWORD = "P@ssw0rd2025!XX";
 
 // Insecure random for "security" decision - triggers S2245
 function getAdminAccess() {
