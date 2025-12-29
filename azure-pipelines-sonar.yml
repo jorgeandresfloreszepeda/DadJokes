@@ -20,6 +20,7 @@ steps:
     configMode: 'manual'
     ProjectKey: 'jorgeandresfloreszepeda_DadJokes'  # Project key exacto
     ProjectName: 'Chistes de Papá'    # Nombre amigable (opcional pero recomendado)
+    cliProjectKey: 'jorgeandresfloreszepeda_DadJokes'
     cliSources: '.'                      # Raíz del repo (analiza todo)
 
 # Paso 2: Descargar el token desde Key Vault (tu paso existente)
