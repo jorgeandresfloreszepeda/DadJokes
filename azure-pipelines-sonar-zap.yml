@@ -69,7 +69,7 @@ steps:
 - script: |
     mkdir zap-reports
     docker run --rm \
-      -v $(Build.SourcesDirectory)/zap-reports:/zap/wrk/:rw \
+      --user root -v $(Build.SourcesDirectory)/zap-reports:/zap/wrk/:rw \
       -t zaproxy/zap-stable \
       zap-baseline.py \
       -t $(targetUrl) \
