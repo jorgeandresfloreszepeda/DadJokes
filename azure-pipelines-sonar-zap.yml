@@ -70,12 +70,12 @@ steps:
     mkdir zap-reports
     docker run --rm \
       -v $(Build.SourcesDirectory)/zap-reports:/zap/wrk/:rw \
-      -t owasp/zap2docker-stable \
+      -t zaproxy/zap-stable \
       zap-baseline.py \
       -t $(targetUrl) \
       -r zap-report.html \
       -x zap-report.xml \
-      --autooff  # Apaga ZAP al finalizar
+      --autooff
   displayName: 'Ejecutar OWASP ZAP Baseline Scan (DAST)'
 
 # Paso 7: Publicar reportes ZAP como artefactos
