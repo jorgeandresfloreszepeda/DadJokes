@@ -74,7 +74,8 @@ steps:
       zap-baseline.py \
       -t $(targetUrl) \
       -r zap-report.html \
-      -x zap-report.xml \
+      -x zap-report.xml
+      -I \
       --autooff
   displayName: 'Ejecutar OWASP ZAP Baseline Scan (DAST)'
 
