@@ -25,7 +25,7 @@ async function login() {
 
     try {
         // Insecure protocol - triggers hotspot
-        await fetch('http://insecure-api.example.com/ping');
+        // await fetch('http://insecure-api.example.com/ping');
 
         // Insecure WebSocket
         const ws = new WebSocket('ws://evil-server.com/socket');
@@ -39,11 +39,11 @@ async function login() {
         const jokes = await jokesResp.json();
 
         // ReDoS vulnerable regex - triggers security hotspot
-        const redos = /^(a+)+$/;
-        const evilInput = "a".repeat(100000) + "b";
-        if (redos.test(evilInput)) { // This will hang the browser
-            console.log("Regex passed (but froze your tab)");
-        }
+        // const redos = /^(a+)+$/;
+        // const evilInput = "a".repeat(100000) + "b";
+        // if (redos.test(evilInput)) { // This will hang the browser
+        //     console.log("Regex passed (but froze your tab)");
+        // }
 
         // Use of eval - direct security hotspot
         eval("console.log('eval executed - code injection possible')");
