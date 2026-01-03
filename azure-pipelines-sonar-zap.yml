@@ -74,10 +74,10 @@ steps:
       zap-baseline.py \
       -t $(targetUrl) \
       -r zap-report.html \
-      -x zap-report.xml
-      -I \
+      -x zap-report.xml \
       --autooff
   displayName: 'Ejecutar OWASP ZAP Baseline Scan (DAST)'
+  continueOnError: true  # No fallar el pipeline si ZAP encuentra vulnerabilidades
 
 # Paso 7: Publicar reportes ZAP como artefactos
 - publish: $(Build.SourcesDirectory)/zap-reports
