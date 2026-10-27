@@ -15,12 +15,25 @@
         input, button { padding: 10px; margin: 5px; font-size: 1em; }
         #joke { font-size: 1.5em; margin-top: 30px; padding: 20px; background: #000; border: 2px solid red; }
         .hidden { display: none; }
+        .toggle-btn { cursor: pointer; font-size: 0.85em; }
     </style>
 
     <!-- Inline script with no nonce → CSP violation if policy existed -->
     <script>
         // Inline script without nonce (would violate strict CSP)
         console.log("Inline script running - CSP bypass risk");
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('password');
+            const toggleBtn = document.getElementById('btnTogglePass');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                toggleBtn.innerText = 'Ocultar';
+            } else {
+                passInput.type = 'password';
+                toggleBtn.innerText = 'Mostrar';
+            }
+        }
     </script>
 </head>
 <body>
@@ -30,6 +43,7 @@
         <input type="text" id="username" placeholder="Usuario (prueba: admin)">
         <br><br>
         <input type="password" id="password" placeholder="Contraseña (prueba: 12345)">
+        <button type="button" id="btnTogglePass" class="toggle-btn" onclick="togglePasswordVisibility()">Mostrar</button>
         <br><br>
         <button onclick="login()">Acceder al Chiste Secreto</button>
         <p id="error" style="color: red; font-weight: bold;"></p>
