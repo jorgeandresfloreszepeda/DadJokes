@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chistes de Papá - Insecure Edition</title>
+    <title>Chistes de Papá - Insecure Edition - in GitHub</title>
 
     <!-- Removed CSP entirely → triggers security hotspot -->
     <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'"> -->
@@ -16,6 +16,12 @@
         #joke { font-size: 1.5em; margin-top: 30px; padding: 20px; background: #000; border: 2px solid red; }
         .hidden { display: none; }
         .toggle-btn { cursor: pointer; font-size: 0.85em; }
+        nav { margin: 20px 0; padding: 10px; background: #000; border: 1px solid #0f0; }
+        nav h2 { margin: 5px 0 10px; font-size: 1.2em; }
+        nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; justify-content: center; }
+        nav li { margin: 5px 10px; }
+        nav a { color: #0f0; text-decoration: underline; }
+        nav a:hover { color: #fff; }
     </style>
 
     <!-- Inline script with no nonce → CSP violation if policy existed -->
@@ -38,6 +44,22 @@
 </head>
 <body>
     <h1>Bienvenido al Sistema Ultra Seguro de Chistes</h1>
+
+    <nav>
+        <h2>Menú de información</h2>
+        <ul>
+            <li><a href="pages/info1.html">1. ¿Qué es un chiste de papá?</a></li>
+            <li><a href="pages/info2.html">2. Origen del humor</a></li>
+            <li><a href="pages/info3.html">3. Tipos de juegos de palabras</a></li>
+            <li><a href="pages/info4.html">4. Por qué nos hacen reír</a></li>
+            <li><a href="pages/info5.html">5. Cómo contar un buen chiste</a></li>
+            <li><a href="pages/info6.html">6. Beneficios de la risa</a></li>
+            <li><a href="pages/info7.html">7. El humor en el mundo</a></li>
+            <li><a href="pages/info8.html">8. Historia de los chistes</a></li>
+            <li><a href="pages/info9.html">9. Consejos para crear chistes</a></li>
+            <li><a href="pages/info10.html">10. Acerca de este proyecto</a></li>
+        </ul>
+    </nav>
 
     <div id="login">
         <input type="text" id="username" placeholder="Usuario (prueba: admin)">
