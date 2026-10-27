@@ -1,0 +1,40 @@
+name: Pipeline with Manual Approval
+
+# Starts when you click "Run workflow" in the Actions tab
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: 1. Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build message
+        run: |
+          echo "🔨 Building the project..."
+          echo "✅ Build finished (simulated)"
+
+  approval:
+    name: 2. Manual Approval
+    runs-on: ubuntu-latest
+    needs: build
+    # This job pauses until a required reviewer approves it.
+    # The "production" environment must have "Required reviewers" enabled
+    # in Settings > Environments.
+    environment: production
+    steps:
+      - name: Approval message
+        run: |
+          echo "✋ Approved by a reviewer!"
+          echo "Approved run: ${{ github.run_id }}"
+
+  deploy:
+    name: 3. Deploy
+    runs-on: ubuntu-latest
+    needs: approval
+    steps:
+      - name: Deploy message
+        run: |
+          echo "🚀 Deploying (simulated)..."
+          echo "No real server is used in this demo."
+          echo "🎉 Pipeline finished successfully!"
