@@ -2,8 +2,6 @@ name: Deploy to GitHub Pages
 
 # Deploys on every push to main, or manually from the Actions tab
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
 
 # Permissions required by GitHub Pages
