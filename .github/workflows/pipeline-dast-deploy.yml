@@ -1,0 +1,199 @@
+name: DAST + Deploy to GitHub Pages
+
+# DAST (OWASP ZAP) runs against the built site served locally BEFORE publishing,
+# and again against the live URL AFTER publishing.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------
+  # 1. Build the site package (same file list as the original pipeline)
+  # ---------------------------------------------------------------
+  build:
+    name: 1. Prepare site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download the code
+        uses: actions/checkout@v4
+
+      - name: Copy only the site files
+        run: |
+          mkdir _site
+          cp index.html script.js jokes.json users.json _site/
+          cp -r pages _site/
+          echo "Files to publish:"
+          ls -R _site
+
+      - name: Keep a copy for DAST
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-for-dast
+          path: _site
+          retention-days: 1
+
+      - name: Configure Pages
+        if: github.event_name != 'pull_request' && github.event_name != 'schedule'
+        uses: actions/configure-pages@v5
+
+      - name: Upload site package
+        if: github.event_name != 'pull_request' && github.event_name != 'schedule'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  # ---------------------------------------------------------------
+  # 2. DAST pre-deploy: serve the built site locally and scan it with ZAP
+  # ---------------------------------------------------------------
+  dast-local:
+    name: 2. DAST - ZAP (pre-deploy)
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name != 'schedule'
+    permissions:
+      contents: read
+    steps:
+      - name: Download the code (for ZAP rules file)
+        uses: actions/checkout@v4
+
+      - name: Download built site
+        uses: actions/download-artifact@v4
+        with:
+          name: site-for-dast
+          path: _site
+
+      - name: Serve the site locally
+        run: |
+          cd _site
+          nohup python3 -m http.server 8080 > ../server.log 2>&1 &
+          for i in $(seq 1 15); do
+            curl -sf http://localhost:8080/ > /dev/null && echo "Server is up" && exit 0
+            sleep 1
+          done
+          echo "Server did not start" && cat ../server.log && exit 1
+
+      - name: Run ZAP baseline scan
+        run: |
+          mkdir -p zap-out && chmod 777 zap-out
+          RULES=""
+          if [ -f .zap/rules.tsv ]; then
+            cp .zap/rules.tsv zap-out/rules.tsv
+            RULES="-c rules.tsv"
+          fi
+          set +e
+          docker run --rm --network host \
+            -v "$PWD/zap-out:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t http://localhost:8080 \
+              -r zap-report.html -J zap-report.json -w zap-report.md \
+              $RULES
+          CODE=$?
+          set -e
+          echo "ZAP exit code: $CODE"
+          # 0 = clean, 1 = FAIL alerts, 2 = WARN alerts only, 3 = scan error
+          if [ "$CODE" -eq 1 ] || [ "$CODE" -eq 3 ]; then
+            echo "::error::ZAP found FAIL-level alerts or errored. See the report artifact."
+            exit 1
+          fi
+          if [ "$CODE" -eq 2 ]; then
+            echo "::warning::ZAP reported warnings (non-blocking). See the report artifact."
+          fi
+
+      - name: Upload ZAP report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report-local
+          path: zap-out/
+          retention-days: 14
+
+  # ---------------------------------------------------------------
+  # 3. Publish (only after the pre-deploy DAST passes)
+  # ---------------------------------------------------------------
+  deploy:
+    name: 3. Publish
+    if: github.event_name != 'pull_request' && github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    needs: [build, dast-local]
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Done
+        run: echo "🎉 Site published at ${{ steps.deployment.outputs.page_url }}"
+
+  # ---------------------------------------------------------------
+  # 4. DAST post-deploy: scan the real live URL (includes the headers
+  #    GitHub Pages actually serves). Report-only, never rolls back.
+  # ---------------------------------------------------------------
+  dast-live:
+    name: 4. DAST - ZAP (live site)
+    if: always() && (needs.deploy.result == 'success' || github.event_name == 'schedule')
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Download the code (for ZAP rules file)
+        uses: actions/checkout@v4
+
+      - name: Resolve target URL
+        id: target
+        run: |
+          URL="${{ needs.deploy.outputs.page_url }}"
+          if [ -z "$URL" ]; then
+            # Scheduled runs: use the repo's Pages URL, or set repo variable PAGES_URL
+            URL="${{ vars.PAGES_URL }}"
+          fi
+          if [ -z "$URL" ]; then
+            OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+            REPO="${GITHUB_REPOSITORY#*/}"
+            URL="https://${OWNER}.github.io/${REPO}/"
+          fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Scanning $URL"
+
+      - name: Run ZAP baseline scan
+        run: |
+          mkdir -p zap-out && chmod 777 zap-out
+          RULES=""
+          if [ -f .zap/rules.tsv ]; then
+            cp .zap/rules.tsv zap-out/rules.tsv
+            RULES="-c rules.tsv"
+          fi
+          set +e
+          docker run --rm \
+            -v "$PWD/zap-out:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t "${{ steps.target.outputs.url }}" \
+              -r zap-report.html -J zap-report.json -w zap-report.md \
+              $RULES
+          CODE=$?
+          set -e
+          echo "ZAP exit code: $CODE"
+          if [ "$CODE" -ne 0 ]; then
+            echo "::warning::ZAP live scan exit code $CODE. Review the report artifact."
+          fi
+
+      - name: Upload ZAP report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report-live
+          path: zap-out/
+          retention-days: 30
